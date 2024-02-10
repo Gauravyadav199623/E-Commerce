@@ -14,11 +14,12 @@ const Cricket = sequelize.define('cricket', {
   dob: Sequelize.STRING,
   photo: Sequelize.STRING,
   career: Sequelize.TEXT,
-//   matches: Sequelize.STRING,
-//   fifties: Sequelize.STRING,
-//   centuries: Sequelize.STRING,
-//   wickets: Sequelize.STRING,
-//   average: Sequelize.STRING,
+//   matches: Sequelize.INTEGER,
+//   fifties: Sequelize.INTEGER,
+//   centuries: Sequelize.INTEGER,
+//   wickets: Sequelize.INTEGER,
+//   average: Sequelize.DOUBLE,
 });
+// sequelize.sync()
 
 module.exports = Cricket;
