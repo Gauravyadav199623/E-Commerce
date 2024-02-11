@@ -6,12 +6,13 @@ const getDb=require('../util/database').getDb
 
 
 class Product{
-  constructor(title,price,description,imageUrl,id){
+  constructor(title,price,description,imageUrl,id,userId){
     this.title=title;
     this.price=price;
     this.description=description;
     this.imageUrl=imageUrl;
     this._id= id ?new mongodb.ObjectId(id): null;
+    this.userId=userId
   }
 
   save(){
@@ -49,7 +50,7 @@ class Product{
 
   static findById(prodId){
     const db=getDb();
-return db.collection('products').find({_id:new mongodb.ObjectId(prodId)}).next()//! what does next() exactly here ??
+return db.collection('products').find({_id:new mongodb.ObjectId(prodId)}).next()//! what does next() exactly here ??-->next will return us first element which matches the condition
 .then(product => {
   console.log(product);
   return product;
