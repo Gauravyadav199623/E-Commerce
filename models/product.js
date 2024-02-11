@@ -49,7 +49,7 @@ class Product{
 
   static findById(prodId){
     const db=getDb();
-return db.collection('products').find({_id:new mongodb.ObjectId(prodId)}).next()
+return db.collection('products').find({_id:new mongodb.ObjectId(prodId)}).next()//! what does next() exactly here ??
 .then(product => {
   console.log(product);
   return product;
