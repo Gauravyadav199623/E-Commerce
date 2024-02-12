@@ -19,6 +19,7 @@ exports.postAddProduct = (req, res, next) => {
     price:price,
     description:description,
     imageUrl:imageUrl,
+    userId:req.user  //mongoose will automatically get the user id from user object
   })//key(from model):value(from req.body)
   product
     .save() // this save method is provided by mongoose (we dint declare it)
@@ -81,7 +82,9 @@ Product.findById(prodId).then(product=>{
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find() 
+  Product.find()
+  // .select("title price -_id")
+  // .populate('userId','name') 
     .then(products => {
       res.render('admin/products', {
         prods: products,

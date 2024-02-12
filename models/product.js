@@ -19,6 +19,11 @@ const productSchema=new Schema({
   imageUrl:{
     type: String,
     require:true
+  },
+  userId:{
+    type:Schema.Types.ObjectId,
+    ref:'User',     //we mention the model the model we want to relate with
+    require:true
   }
 });
 
