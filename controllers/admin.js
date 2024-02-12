@@ -1,6 +1,5 @@
 const Product = require('../models/product');
 
-
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
@@ -11,19 +10,18 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
+  const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const imageUrl = req.body.imageUrl;
-  const product= new Product({
-    title:title,
-    price:price,
-    description:description,
-    imageUrl:imageUrl,
-    userId:req.user  //mongoose will automatically get the user id from user object
-  })//key(from model):value(from req.body)
+  const product = new Product({
+    title: title,
+    price: price,
+    description: description,
+    imageUrl: imageUrl,
+    userId: req.user
+  });
   product
-    .save() // this save method is provided by mongoose (we dint declare it)
-    // technically we didn't get a promise but mongoose gives us then & catch method
+    .save()
     .then(result => {
       // console.log(result);
       console.log('Created Product');
@@ -59,33 +57,30 @@ exports.postEditProduct = (req, res, next) => {
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
-  const updatedDesc = req.body.description;
   const updatedImageUrl = req.body.imageUrl;
-  
-Product.findById(prodId).then(product=>{
+  const updatedDesc = req.body.description;
 
-  product.title=updatedTitle;
-  product.price=updatedPrice;
-  product.description=updatedDesc;
-  product.imageUrl=updatedImageUrl;
-  
-  
-  return product // this product will we a mongoose object with mongoose method like save 
-  //if we call save() on an existing object the it wont save as a new object but only the changes will be save (ie an update)
-    .save()
-})
-.then(result => {
+  Product.findById(prodId)
+    .then(product => {
+      product.title = updatedTitle;
+      product.price = updatedPrice;
+      product.description = updatedDesc;
+      product.imageUrl = updatedImageUrl;
+      return product.save();
+    })
+    .then(result => {
       console.log('UPDATED PRODUCT!');
       res.redirect('/admin/products');
-})
-.catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
 };
 
 exports.getProducts = (req, res, next) => {
   Product.find()
-  // .select("title price -_id")
-  // .populate('userId','name') 
+    // .select('title price -_id')
+    // .populate('userId', 'name')
     .then(products => {
+      console.log(products);
       res.render('admin/products', {
         prods: products,
         pageTitle: 'Admin Products',
@@ -97,8 +92,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findByIdAndDelete(prodId)
-    
+  Product.findByIdAndRemove(prodId)
     .then(() => {
       console.log('DESTROYED PRODUCT');
       res.redirect('/admin/products');

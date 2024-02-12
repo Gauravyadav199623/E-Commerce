@@ -1,8 +1,6 @@
 const Product = require('../models/product');
+mongoose=require('mongoose')
 
-
-//in mongoose find did not give us the cursor but it give us the product
-// we can use .cursor(){to handel large amount of data} to get the cursor in return and use .eachAsync() for iteration / next()  to get the next element
 exports.getProducts = (req, res, next) => {
   Product.find()
     .then(products => {
@@ -21,8 +19,6 @@ exports.getProducts = (req, res, next) => {
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
   Product.findById(prodId)
-  // findById is given to us by mongoose
-  // we can pass string to findById() and mongoose will automatically convert it into ObjectId()
     .then(product => {
       res.render('shop/product-detail', {
         product: product,
@@ -47,39 +43,51 @@ exports.getIndex = (req, res, next) => {
     });
 };
 
+// exports.getCart = (req, res, next) => {
+//   console.log(req.user.cart.items,"<---user");
+//   req.user
+//     .populate('cart.items.productId')
+//     .execPopulate()
+//     .then(user => {
+//       console.log(user);
+//       const products = user.cart.items;
+//       res.render('shop/cart', {
+//         path: '/cart',
+//         pageTitle: 'Your Cart',
+//         products: products
+//       });
+//     })
+//     .catch(err => console.log(err));
+// };
 exports.getCart = (req, res, next) => {
-  req.user
-    .populate('cart.items.productId')
-    .execPopulate()
-    .then(user => {
-      const products=user.cart.items;
-      res.render('shop/cart', {
-            path: '/cart',
-            pageTitle: 'Your Cart',
-            products: products
-          });
-    })
-    .catch(err => console.log(err));
+  console.log(req.user.cart.items, "<---user");
+
+  const products = req.user.cart.items;
+
+  res.render('shop/cart', {
+    path: '/cart',
+    pageTitle: 'Your Cart',
+    products: products
+  });
 };
+
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
   Product.findById(prodId)
-    .then(product =>{
-      return req.user.addToCart(product)
+    .then(product => {
+      return req.user.addToCart(product);
     })
-    .then(result=>{
-      console.log(result)
-      res.redirect('/cart')
-    })
-
+    .then(result => {
+      console.log(result);
+      res.redirect('/cart');
+    });
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   req.user
-    .deleteItemFromCart(prodId)
-
+    .removeFromCart(prodId)
     .then(result => {
       res.redirect('/cart');
     })
