@@ -14,8 +14,15 @@ exports.postAddProduct = (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
   const imageUrl = req.body.imageUrl;
-  const product= new Product(title,price,description,imageUrl,null,req.user._id)// prod id is null before the product is created
-    product.save()
+  const product= new Product({
+    title:title,
+    price:price,
+    description:description,
+    imageUrl:imageUrl,
+  })//key(from model):value(from req.body)
+  product
+    .save() // this save method is provided by mongoose (we dint declare it)
+    // technically we didn't get a promise but mongoose gives us then & catch method
     .then(result => {
       // console.log(result);
       console.log('Created Product');
@@ -33,7 +40,6 @@ exports.getEditProduct = (req, res, next) => {
   }
   const prodId = req.params.productId;
   Product.findById(prodId)
-  // Product.findById(prodId)
     .then(product => {
       if (!product) {
         return res.redirect('/');
@@ -55,18 +61,27 @@ exports.postEditProduct = (req, res, next) => {
   const updatedDesc = req.body.description;
   const updatedImageUrl = req.body.imageUrl;
   
-      const product=new Product(updatedTitle,updatedPrice,updatedDesc,updatedImageUrl,prodId);
-    product
+Product.findById(prodId).then(product=>{
+
+  product.title=updatedTitle;
+  product.price=updatedPrice;
+  product.description=updatedDesc;
+  product.imageUrl=updatedImageUrl;
+  
+  
+  return product // this product will we a mongoose object with mongoose method like save 
+  //if we call save() on an existing object the it wont save as a new object but only the changes will be save (ie an update)
     .save()
-    .then(result => {
+})
+.then(result => {
       console.log('UPDATED PRODUCT!');
       res.redirect('/admin/products');
-    })
-    .catch(err => console.log(err));
+})
+.catch(err => console.log(err));
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll() 
+  Product.find() 
     .then(products => {
       res.render('admin/products', {
         prods: products,
@@ -79,7 +94,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.deleteById(prodId)
+  Product.findByIdAndDelete(prodId)
     
     .then(() => {
       console.log('DESTROYED PRODUCT');

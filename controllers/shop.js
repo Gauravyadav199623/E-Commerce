@@ -1,8 +1,12 @@
 const Product = require('../models/product');
 
+
+//in mongoose find did not give us the cursor but it give us the product
+// we can use .cursor(){to handel large amount of data} to get the cursor in return and use .eachAsync() for iteration / next()  to get the next element
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then(products => {
+      console.log(products);
       res.render('shop/product-list', {
         prods: products,
         pageTitle: 'All Products',
@@ -16,16 +20,9 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  // Product.findAll({ where: { id: prodId } })
-  //   .then(products => {
-  //     res.render('shop/product-detail', {
-  //       product: products[0],
-  //       pageTitle: products[0].title,
-  //       path: '/products'
-  //     });
-  //   })
-  //   .catch(err => console.log(err));
   Product.findById(prodId)
+  // findById is given to us by mongoose
+  // we can pass string to findById() and mongoose will automatically convert it into ObjectId()
     .then(product => {
       res.render('shop/product-detail', {
         product: product,
@@ -37,7 +34,7 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then(products => {
       res.render('shop/index', {
         prods: products,
