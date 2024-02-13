@@ -15,7 +15,7 @@ const userSchema = new Schema({
     items: [
       {
         productId: {
-          type: Schema.Types.ObjectId,
+          type: Schema.Types.ObjectId,    // here we are telling mongoose that this will store a  id which is reference to other model 
           ref: 'Product',
           required: true
         },
@@ -26,6 +26,8 @@ const userSchema = new Schema({
 });
 
 userSchema.methods.addToCart = function(product) {
+  // .methods key is an object which allow us to add our own method/logic by simply adding them
+  // the function has to written like this so that "this" key word refers to the schema
   const cartProductIndex = this.cart.items.findIndex(cp => {
     return cp.productId.toString() === product._id.toString();
   });

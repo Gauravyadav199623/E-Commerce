@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {
   User.findById('65c9c5fad0fab2cc48ff75ea')
     .then(user => {
-      req.user = user;
+      req.user = user;// it is a mongoose so we can call all the mongoose function/methods on this
       next();
     })
     .catch(err => console.log(err));

@@ -18,7 +18,7 @@ exports.postAddProduct = (req, res, next) => {
     price: price,
     description: description,
     imageUrl: imageUrl,
-    userId: req.user
+    userId: req.user // we are storing the entire user Object  here and mongoose will pick the id automatically
   });
   product
     .save()
@@ -62,11 +62,15 @@ exports.postEditProduct = (req, res, next) => {
 
   Product.findById(prodId)
     .then(product => {
+      // product here will be a mongoose object ie it will have methods like .save()
+      
       product.title = updatedTitle;
       product.price = updatedPrice;
       product.description = updatedDesc;
       product.imageUrl = updatedImageUrl;
       return product.save();
+      // if we call .save() on an existing object it will not save the new one object it will just save the changes(ie update)
+      // KIM to return the product so that you can chain 'then'
     })
     .then(result => {
       console.log('UPDATED PRODUCT!');
@@ -77,8 +81,9 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   Product.find()
-    // .select('title price -_id')
-    // .populate('userId', 'name')
+    // .select('title price -_id') // select allow us to define which field we want to select or un select(using '-')
+    //here we are selecting 'title' and 'price' and unselecting "id"
+    // .populate('userId', 'name') // populate allow us to tell mongoose to populate a certain field with all the  details information and not just the id. it give us all the data in one step 
     .then(products => {
       console.log(products);
       res.render('admin/products', {
@@ -93,6 +98,7 @@ exports.getProducts = (req, res, next) => {
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   Product.findByIdAndRemove(prodId)
+  // another method provided by mongoose that work on mongoose object
     .then(() => {
       console.log('DESTROYED PRODUCT');
       res.redirect('/admin/products');

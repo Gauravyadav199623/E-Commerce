@@ -2,7 +2,8 @@ const Product = require('../models/product');
 const Order = require('../models/order');
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
+  Product.find()    //find in mongoose will not return a cursor but instead it will it will give us all the product
+  // we can add .cursor() to get access to the cursor and the use eachAsync to loop through or next() to get the first element
     .then(products => {
       console.log(products);
       res.render('shop/product-list', {
@@ -18,8 +19,8 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findById(prodId)
-    .then(product => {
+  Product.findById(prodId)  //here 'Product' is a mongoose model and mongoose indeed has a findById method 
+    .then(product => {  // the "product" here will be the product we are searching for in Product
       res.render('shop/product-detail', {
         product: product,
         pageTitle: product.title,
@@ -45,8 +46,8 @@ exports.getIndex = (req, res, next) => {
 
 exports.getCart = (req, res, next) => {
   req.user
-    .populate('cart.items.productId')
-    // .execPopulate()
+    .populate('cart.items.productId')// it will return a query nat a promise so we have to use a execPopulate(not here apparently)
+    // .execPopulate()//so that populate will return promise
     .then(user => {
       const products = user.cart.items;
       res.render('shop/cart', {
@@ -87,6 +88,7 @@ exports.postOrder = (req, res, next) => {
     .then(user => {
       const products = user.cart.items.map(i => {
         return { quantity: i.quantity, product: { ...i.productId._doc } };
+        //here productId  will have a lot of meta data attach to it(even though we cant really see it when we console). _doc will give us access to just the data in there
       });
       const order = new Order({
         user: {
